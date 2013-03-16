@@ -155,12 +155,12 @@ CREATE TABLE forsale (
 
 INSERT INTO businessobject(id, botype) VALUES ('physprod1', 'edu.byu.isys413.afreh20.mystuff.ForSale');
 INSERT INTO product(id, price, type, prod_num, name) VALUES ('physprod1', 55.55, 'PhysicalProd', 2, 'camera');
-INSERT INTO physicalprod(id, location, commission_rate, store_id, pprod_num, phystype) VALUES ('physprod1', 'isle 5', .078, 'store1', 2, "ForSale");
+INSERT INTO physicalprod(id, location, commission_rate, store_id, pprod_num, phystype, status) VALUES ('physprod1', 'isle 5', .078, 'store1', 2, "ForSale", "available");
 INSERT INTO forsale (id, isnew) VALUES ('physprod1', false);
 
 INSERT INTO businessobject(id, botype) VALUES ('physprod2', 'edu.byu.isys413.afreh20.mystuff.ForRent');
 INSERT INTO product(id, price, type, prod_num, name) VALUES ('physprod2', 66.66, 'PhysicalProd', 3, 'disposable camera');
-INSERT INTO physicalprod(id, location, commission_rate, store_id, pprod_num, phystype) VALUES ('physprod2', 'isle 7', .023, 'store1', 3, "ForRent");
+INSERT INTO physicalprod(id, location, commission_rate, store_id, pprod_num, phystype, status) VALUES ('physprod2', 'isle 7', .023, 'store1', 3, "ForRent", "available");
 INSERT INTO forrent (id, timesrented) VALUES ('physprod2', 7);
 
 
@@ -224,7 +224,8 @@ CREATE TABLE rental(
   dateout DATE,
   datedue DATE,
   remindersent BOOLEAN,
-  workordernum Integer
+  workordernum Integer,
+  forrentid VARCHAR(40) REFERENCES forrent(id)
 );
 
 INSERT INTO businessobject(id, botype) VALUES ('sale1', 'edu.byu.isys413.afreh20.mystuff.Sale');

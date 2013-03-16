@@ -15,6 +15,8 @@ public class Rental extends RevenueSource{
 	private boolean reminderSent = false;
 	@BusinessObjectField
 	private int workordernum;
+	@BusinessObjectField
+	private String forrentid;
 	
 	public Rental(String id) {
 		super(id);
@@ -92,6 +94,21 @@ public class Rental extends RevenueSource{
 	 */
 	public void setWorkordernum(int workordernum) {
 		this.workordernum = workordernum;
+		setDirty();
+	}
+
+	/**
+	 * @return the forrentid
+	 */
+	public String getForrentid() {
+		return forrentid;
+	}
+
+	/**
+	 * @param forrentid the forrentid to set
+	 */
+	public void setForrentid(String forrentid) {
+		this.forrentid = forrentid;
 		setDirty();
 	}
 }

@@ -2,6 +2,7 @@ package edu.byu.isys413.afreh20.mystuff;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.eclipse.swt.widgets.Display;
@@ -77,6 +78,7 @@ public class SaleWin {
 	private Product prod;
 	@SuppressWarnings("unused")
 	private SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
+	private Label lblQuantity;
 //	private RevenueSource revSource;
 
 	/**
@@ -137,15 +139,15 @@ public class SaleWin {
 		//change the following lines between commented and uncommented to 
 		//skip the login window (and also set an emp, store, and cust auto)
 		
-		 doLoginWin();
+//		 doLoginWin();
 		
-//		try {
-//			this.emp = BusinessObjectDAO.getInstance().read("employee1");
-//			this.store = BusinessObjectDAO.getInstance().read("store1");
-//			this.cust = BusinessObjectDAO.getInstance().read("customer1");
-//		} catch (DataException e) {
-//			e.printStackTrace();
-//		}
+		try {
+			this.emp = BusinessObjectDAO.getInstance().read("employee1");
+			this.store = BusinessObjectDAO.getInstance().read("store1");
+			this.cust = BusinessObjectDAO.getInstance().read("customer1");
+		} catch (DataException e) {
+			e.printStackTrace();
+		}
 		
 		//end switching of comments
 		////////////////////////////
@@ -424,9 +426,20 @@ public class SaleWin {
 					try {
 						Product p = BusinessObjectDAO.getInstance().searchForBO("Product", new SearchCriteria("prod_num", Integer.parseInt(txtProdSearch.getText())));
 						if (p.getType().equals("PhysicalProd")) {
-							prod = BusinessObjectDAO.getInstance().searchForBO("PhysicalProd", new SearchCriteria("pprod_num", p.getProd_num()));
+							PhysicalProd temppprod = BusinessObjectDAO.getInstance().searchForBO("PhysicalProd", new SearchCriteria("pprod_num", p.getProd_num()));
+							if(temppprod.getPhystype().equals("ForRent")){
+								prod = BusinessObjectDAO.getInstance().searchForBO("ForRent", new SearchCriteria("id", temppprod.getId()));
+								lblQuantity.setText("Number of Days");
+								btnAddProduct.setText("Add Rental");
+							}else{
+								prod = BusinessObjectDAO.getInstance().searchForBO("ForSale", new SearchCriteria("id", temppprod.getId()));
+								lblQuantity.setText("Quantity");
+								btnAddProduct.setText("Add Product");
+							}
 						} else {
 							prod = BusinessObjectDAO.getInstance().searchForBO("ConceptualProd", new SearchCriteria("cprod_num", p.getProd_num()));
+							lblQuantity.setText("Quantity");
+							btnAddProduct.setText("Add Product");
 						}
 						txtProdName.setText(prod.getName());
 						txtPrice.setText(p.getPrice() + "");
@@ -455,7 +468,10 @@ public class SaleWin {
 		txtProdName.setText("Name");
 		txtProdName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-		Label lblQuantity = new Label(composite_5, SWT.NONE);
+		this.lblQuantity = new Label(composite_5, SWT.NONE);
+		GridData gd_lblQuantity = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+		gd_lblQuantity.widthHint = 136;
+		lblQuantity.setLayoutData(gd_lblQuantity);
 		lblQuantity.setText("Quantity:");
 
 		quantity = new Spinner(composite_5, SWT.BORDER);
@@ -488,18 +504,51 @@ public class SaleWin {
 			public void widgetSelected(SelectionEvent e) {
 				if(prod != null){
 					try {
-						Sale sale = BusinessObjectDAO.getInstance().create("Sale");
-						sale.setProduct_id(prod.getId());
-						sale.setQuantity(Integer.parseInt(quantity.getText()));
-						sale.setChargeamt(Integer.parseInt(quantity.getText())*prod.getPrice());
-						sale.setTransaction_id(trans.getId());
-						sale.setType("Sale");
-						sale.save();
-						
-						trans.setCommissionTotal(sale.getChargeamt() * prod.getCommissionRate());
-						
-						trans.addRevSource(sale);
-						refreshProdTable();
+						if(prod.getType().equals("Physical")){
+							PhysicalProd temppprod = BusinessObjectDAO.getInstance().read(prod.getId());
+							if(temppprod.getPhystype().equals("ForRent")){
+								Rental rental = BusinessObjectDAO.getInstance().create("Rental");
+								rental.setChargeamt(Integer.parseInt(quantity.getText())*prod.getPrice());
+								
+								//just to get the stupid due date. I hate dates.
+								Date today = new Date();
+								Calendar cal = Calendar.getInstance();
+								cal.setTime(today);
+								cal.add(Calendar.DATE, Integer.parseInt(quantity.getText()));
+								rental.setDateDue(cal.getTime());
+								
+								rental.setDateOut(today);
+								rental.setForrentid(temppprod.getId());
+//								rental.set
+										
+							} else{
+								Sale sale = BusinessObjectDAO.getInstance().create("Sale");
+								sale.setProduct_id(prod.getId());
+								sale.setQuantity(Integer.parseInt(quantity.getText()));
+								sale.setChargeamt(Integer.parseInt(quantity.getText())*prod.getPrice());
+								sale.setTransaction_id(trans.getId());
+								sale.setType("Sale");
+								sale.save();
+								
+								trans.setCommissionTotal(sale.getChargeamt() * prod.getCommissionRate());
+								
+								trans.addRevSource(sale);
+								refreshProdTable();
+							}
+						}else{
+							Sale sale = BusinessObjectDAO.getInstance().create("Sale");
+							sale.setProduct_id(prod.getId());
+							sale.setQuantity(Integer.parseInt(quantity.getText()));
+							sale.setChargeamt(Integer.parseInt(quantity.getText())*prod.getPrice());
+							sale.setTransaction_id(trans.getId());
+							sale.setType("Sale");
+							sale.save();
+							
+							trans.setCommissionTotal(sale.getChargeamt() * prod.getCommissionRate());
+							
+							trans.addRevSource(sale);
+							refreshProdTable();
+						}
 					} catch (DataException e1) {
 //						e1.printStackTrace();
 						txtProdName.setText("Failed to add");
@@ -619,6 +668,10 @@ public class SaleWin {
 						trans.setEmployee_id(emp.getId());
 						trans.setDate(new Date());
 						trans.save();
+						
+						//TODO for changing the status of the products
+						
+						
 						
 						PaymentWin paywin = new PaymentWin(shlSaleWindow, 0, trans);
 						paywin.open();
