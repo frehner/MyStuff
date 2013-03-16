@@ -18,7 +18,7 @@ public class PhysicalProd extends Product {
 	@BusinessObjectField
 	private String store_id;
 	@BusinessObjectField
-	private String type;
+	private String phystype;
 
 	public PhysicalProd(String id) {
 		super(id);
@@ -151,18 +151,20 @@ public class PhysicalProd extends Product {
 	}
 
 	/**
-	 * @return the type
+	 * @return the phystype
 	 */
-	public String getType() {
-		return type;
+	public String getPhystype() {
+		return phystype;
 	}
 
 	/**
-	 * @param type the type to set
+	 * @param phystype the phystype to set
 	 */
-	public void setType(String type) {
-		this.type = type;
+	public void setPhystype(String phystype) {
+		this.phystype = phystype;
 		setDirty();
 	}
+
+	
 
 }

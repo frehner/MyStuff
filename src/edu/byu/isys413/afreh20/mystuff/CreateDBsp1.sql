@@ -139,7 +139,7 @@ CREATE TABLE physicalprod (
   commission_rate DOUBLE  DEFAULT 0,
   store_id VARCHAR(40) REFERENCES store(id),
   pprod_num Integer REFERENCES product(prod_num),
-  type VARCHAR(40)
+  phystype VARCHAR(40)
   -- cprod_id VARCHAR(40) REFERENCES conceptualprod(id)
 );
 
@@ -155,12 +155,12 @@ CREATE TABLE forsale (
 
 INSERT INTO businessobject(id, botype) VALUES ('physprod1', 'edu.byu.isys413.afreh20.mystuff.ForSale');
 INSERT INTO product(id, price, type, prod_num, name) VALUES ('physprod1', 55.55, 'PhysicalProd', 2, 'camera');
-INSERT INTO physicalprod(id, location, commission_rate, store_id, pprod_num, type) VALUES ('physprod1', 'isle 5', .078, 'store1', 2, "forsale");
+INSERT INTO physicalprod(id, location, commission_rate, store_id, pprod_num, phystype) VALUES ('physprod1', 'isle 5', .078, 'store1', 2, "ForSale");
 INSERT INTO forsale (id, isnew) VALUES ('physprod1', false);
 
 INSERT INTO businessobject(id, botype) VALUES ('physprod2', 'edu.byu.isys413.afreh20.mystuff.ForRent');
 INSERT INTO product(id, price, type, prod_num, name) VALUES ('physprod2', 66.66, 'PhysicalProd', 3, 'disposable camera');
-INSERT INTO physicalprod(id, location, commission_rate, store_id, pprod_num, type) VALUES ('physprod2', 'isle 7', .023, 'store1', 3, "forrent");
+INSERT INTO physicalprod(id, location, commission_rate, store_id, pprod_num, phystype) VALUES ('physprod2', 'isle 7', .023, 'store1', 3, "ForRent");
 INSERT INTO forrent (id, timesrented) VALUES ('physprod2', 7);
 
 
