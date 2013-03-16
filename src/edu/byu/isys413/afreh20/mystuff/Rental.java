@@ -1,5 +1,6 @@
 package edu.byu.isys413.afreh20.mystuff;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class Rental extends RevenueSource{
@@ -35,7 +36,18 @@ public class Rental extends RevenueSource{
 	 * @param dateOut the dateOut to set
 	 */
 	public void setDateOut(Date dateOut) {
-		this.dateOut = dateOut;
+		
+		Calendar calendar = Calendar.getInstance();
+
+	    calendar.setTime(dateOut);
+	    calendar.set(Calendar.HOUR_OF_DAY, 0);
+	    calendar.set(Calendar.MINUTE, 0);
+	    calendar.set(Calendar.SECOND, 0);
+	    calendar.set(Calendar.MILLISECOND, 0);
+
+	    java.util.Date realDate = calendar.getTime();
+		
+		this.dateOut = realDate;
 		setDirty();
 	}
 
@@ -50,7 +62,17 @@ public class Rental extends RevenueSource{
 	 * @param dateIn the dateIn to set
 	 */
 	public void setDateIn(Date dateIn) {
-		this.dateIn = dateIn;
+		Calendar calendar = Calendar.getInstance();
+
+	    calendar.setTime(dateIn);
+	    calendar.set(Calendar.HOUR_OF_DAY, 0);
+	    calendar.set(Calendar.MINUTE, 0);
+	    calendar.set(Calendar.SECOND, 0);
+	    calendar.set(Calendar.MILLISECOND, 0);
+
+	    java.util.Date realDate = calendar.getTime();
+		
+		this.dateOut = realDate;
 		setDirty();
 	}
 
@@ -65,7 +87,17 @@ public class Rental extends RevenueSource{
 	 * @param dateDue the dateDue to set
 	 */
 	public void setDateDue(Date dateDue) {
-		this.dateDue = dateDue;
+		Calendar calendar = Calendar.getInstance();
+
+	    calendar.setTime(dateDue);
+	    calendar.set(Calendar.HOUR_OF_DAY, 0);
+	    calendar.set(Calendar.MINUTE, 0);
+	    calendar.set(Calendar.SECOND, 0);
+	    calendar.set(Calendar.MILLISECOND, 0);
+
+	    java.util.Date realDate = calendar.getTime();
+		
+		this.dateDue = realDate;
 		setDirty();
 	}
 

@@ -22,7 +22,7 @@ public class Transaction extends BusinessObject {
 	private String customer_id;
 	@BusinessObjectField
 	private String employee_id;
-	@BusinessObjectField
+//	@BusinessObjectField
 	private double commissionTotal = 0;
 	
 	private ArrayList<RevenueSource> revSource = new ArrayList<RevenueSource>();

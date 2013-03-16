@@ -100,7 +100,8 @@ CREATE TABLE conceptualprod
   description varchar(50),
   cprod_num Integer REFERENCES product(prod_num),
   commission_rate double  DEFAULT 0,
-  store_id VARCHAR(40) REFERENCES store(id)
+  store_id VARCHAR(40) REFERENCES store(id),
+  isrental BOOLEAN
 );
 
 CREATE TABLE conceptualrental (
@@ -115,7 +116,7 @@ INSERT INTO conceptualprod(id, description, commission_rate, store_id, cprod_num
 
 INSERT INTO businessobject(id, botype) VALUES ('conceptual_rental1', 'edu.byu.isys413.afreh20.mystuff.ConceptualRental');
 INSERT INTO product(id, price, type, prod_num, name) VALUES ('conceptual_rental1', '11.11', 'ConceptualProd', 2, 'batteries');
-INSERT INTO conceptualprod(id, description, commission_rate, store_id, cprod_num) VALUES ('conceptual_rental1', 'full of juice', .01, 'store1', 2);
+INSERT INTO conceptualprod(id, description, commission_rate, store_id, cprod_num, isrental) VALUES ('conceptual_rental1', 'full of juice', .01, 'store1', 2, true);
 INSERT INTO conceptualrental(id, priceday, replaceprice) VALUES ('conceptual_rental1', 3.33, 45);
 
 CREATE TABLE storeprod
@@ -139,8 +140,8 @@ CREATE TABLE physicalprod (
   commission_rate DOUBLE  DEFAULT 0,
   store_id VARCHAR(40) REFERENCES store(id),
   pprod_num Integer REFERENCES product(prod_num),
-  phystype VARCHAR(40)
-  -- cprod_id VARCHAR(40) REFERENCES conceptualprod(id)
+  phystype VARCHAR(40),
+  cprod_id VARCHAR(40) REFERENCES conceptualprod(id)
 );
 
 CREATE TABLE forrent (
@@ -158,9 +159,14 @@ INSERT INTO product(id, price, type, prod_num, name) VALUES ('physprod1', 55.55,
 INSERT INTO physicalprod(id, location, commission_rate, store_id, pprod_num, phystype, status) VALUES ('physprod1', 'isle 5', .078, 'store1', 2, "ForSale", "available");
 INSERT INTO forsale (id, isnew) VALUES ('physprod1', false);
 
+INSERT INTO businessobject(id, botype) VALUES ('coceptrent4', 'edu.byu.isys413.afreh20.mystuff.ConceptualRental');
+INSERT INTO product(id, price, type, prod_num, name) VALUES ('coceptrent4', '11.11', 'ConceptualProd', 7, 'disposable camera');
+INSERT INTO conceptualprod (id, description, commission_rate, store_id, cprod_num, isrental) VALUES ('coceptrent4', 'great for multiple uses', .023, 'store1', 1001, true);
+INSERT INTO conceptualrental (id, priceday, replaceprice) VALUES ('coceptrent4', 6.66, 500);
+
 INSERT INTO businessobject(id, botype) VALUES ('physprod2', 'edu.byu.isys413.afreh20.mystuff.ForRent');
 INSERT INTO product(id, price, type, prod_num, name) VALUES ('physprod2', 66.66, 'PhysicalProd', 3, 'disposable camera');
-INSERT INTO physicalprod(id, location, commission_rate, store_id, pprod_num, phystype, status) VALUES ('physprod2', 'isle 7', .023, 'store1', 3, "ForRent", "available");
+INSERT INTO physicalprod(id, location, commission_rate, store_id, pprod_num, phystype, status, cprod_id) VALUES ('physprod2', 'isle 7', .023, 'store1', 3, "ForRent", "available", "coceptrent4");
 INSERT INTO forrent (id, timesrented) VALUES ('physprod2', 7);
 
 

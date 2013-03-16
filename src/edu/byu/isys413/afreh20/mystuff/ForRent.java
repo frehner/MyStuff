@@ -20,6 +20,7 @@ public class ForRent extends PhysicalProd{
 	 */
 	public void setTimesRented(int timesRented) {
 		this.timesRented = timesRented;
+		setDirty();
 	}
 	
 }

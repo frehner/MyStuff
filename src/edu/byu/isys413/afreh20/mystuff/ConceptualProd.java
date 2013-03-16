@@ -18,6 +18,8 @@ public class ConceptualProd extends Product{
 	private double commission_rate = 0;
 	@BusinessObjectField
 	private String store_id;
+	@BusinessObjectField
+	private boolean isrental;
 	
 	public ConceptualProd(String id){
 		super(id);
@@ -161,6 +163,21 @@ public class ConceptualProd extends Product{
 	public void setStore_id(String store_id) {
 		this.store_id = store_id;
 		this.setDirty();
+	}
+
+	/**
+	 * @return the isrental
+	 */
+	public boolean isIsrental() {
+		return isrental;
+	}
+
+	/**
+	 * @param isrental the isrental to set
+	 */
+	public void setIsrental(boolean isrental) {
+		this.isrental = isrental;
+		setDirty();
 	}
 	
 	

@@ -24,7 +24,7 @@ public class Tester1 {
 	 * Tests the employee class
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void TestEmployee() throws Exception {
 		Employee s = BusinessObjectDAO.getInstance().create("Employee", "emp1");
 		s.setFirstname("bobby");
@@ -59,7 +59,7 @@ public class Tester1 {
 	 * Tests the commission class
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void TestCommission() throws Exception {
 		Commission c = BusinessObjectDAO.getInstance().create("Commission", "comm111");
 		c.setAmount(23);
@@ -92,7 +92,7 @@ public class Tester1 {
 	 * Tests the prod and concept prod classes
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void TestProdAndConceptualProd() throws Exception {
 		ConceptualProd cp = BusinessObjectDAO.getInstance().create("ConceptualProd", "cprod111");
 		cp.setCprod_num(111);
@@ -123,8 +123,43 @@ public class Tester1 {
 //		cp.setAverage_cost(9090);
 //		assertTrue("Not Same", compareTwoObjects(cp.getClass(), cp, cp3));
 	}
+	
+//	@Test
+	public void TestConceptualRental() throws Exception {
+		ConceptualRental cp = BusinessObjectDAO.getInstance().create("ConceptualRental", "cprod111");
+		cp.setCprod_num(111);
+		cp.setDescription("It's a cprod!");
+		cp.setManufacturer("Starving children in undisclosed third-world country");
+		cp.setName("Thisisaname");
+		cp.setPrice(2212);
+		cp.setAverage_cost(11);
+		cp.setCommission_rate(.078);
+		cp.setStore_id("store1");
+		cp.setType("conceptual");
+		cp.setPriceDay(33);
+		cp.setReplacePrice(555);
+		cp.save();
 
-	@Test
+		ConceptualRental cp1 = BusinessObjectDAO.getInstance().read("cprod111");
+		assertTrue("Not Same", compareTwoObjects(cp.getClass(), cp, cp1));
+		
+		Cache.getInstance().clear();
+		ConceptualRental cp2 = BusinessObjectDAO.getInstance().read("cprod111");
+		assertTrue("Not Same", compareTwoObjects(cp.getClass(), cp, cp2));
+		
+		cp.setPriceDay(44);
+		cp.setReplacePrice(123);
+		cp.save();
+		Cache.getInstance().clear();
+		ConceptualRental cp3 = BusinessObjectDAO.getInstance().read("cprod111");
+		assertTrue("Not Same", compareTwoObjects(cp.getClass(), cp, cp3));
+
+		//if you really want to break it
+//		cp.setAverage_cost(9090);
+//		assertTrue("Not Same", compareTwoObjects(cp.getClass(), cp, cp3));
+	}
+
+//	@Test
 	public void TestProdAndPhysicalProd() throws Exception {
 		PhysicalProd pp = BusinessObjectDAO.getInstance().create("PhysicalProd", "pprod111");
 		pp.setLocation("top");
@@ -159,7 +194,7 @@ public class Tester1 {
 	 * Testing the customer class
 	 * @throws Exception
 	 */
-	 @Test
+//	 @Test
 	public void TestCustomer() throws Exception {
 		Customer cust = BusinessObjectDAO.getInstance().create("Customer", "cust111");
 		cust.setFirstname("Billy");
@@ -193,7 +228,7 @@ public class Tester1 {
 	 * Tests the debitcredit class
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void TestDebitCredit() throws Exception{
 		DebitCredit dc = BusinessObjectDAO.getInstance().create("DebitCredit", "dc111");
 		dc.setIsdebit(true);
@@ -224,7 +259,7 @@ public class Tester1 {
 	 * Tests the general ledger class
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void TestGenLedger() throws Exception{
 		GenLedger gl = BusinessObjectDAO.getInstance().create("GenLedger", "gl111");
 		gl.setName("a ledger general");
@@ -250,7 +285,7 @@ public class Tester1 {
 //		assertTrue(compareTwoObjects(gl.getClass(), gl, gl4));		
 	}
 
-	@Test
+//	@Test
 	public void TestJournalEntry() throws Exception{
 		JournalEntry je = BusinessObjectDAO.getInstance().create("JournalEntry", "je111");
 		je.setTransaction_id("transid");
@@ -275,7 +310,7 @@ public class Tester1 {
 //		assertTrue(compareTwoObjects(je.getClass(), je, je4));		
 	}
 
-	 @Test
+//	 @Test
 	public void TestPayment() throws Exception{
 		Payment p = BusinessObjectDAO.getInstance().create("Payment", "p111");
 		p.setTransaction_id("transid");
@@ -303,7 +338,7 @@ public class Tester1 {
 //		assertTrue(compareTwoObjects(p.getClass(), p, p4));		
 	}
 
-	@Test
+//	@Test
 	public void TestRevenueSource() throws Exception{
 		RevenueSource rs = BusinessObjectDAO.getInstance().create("RevenueSource", "rs111");
 		rs.setTransaction_id("transid");
@@ -328,8 +363,40 @@ public class Tester1 {
 //		rs.setTransaction_id("blablabla");
 //		assertTrue(compareTwoObjects(rs.getClass(), rs, rs4));		
 	}
-
+	
 	@Test
+	public void TestRental() throws Exception{
+		Rental rs = BusinessObjectDAO.getInstance().create("Rental", "rs111");
+		rs.setTransaction_id("transid");
+		rs.setChargeamt(111);
+		rs.setType("good?");
+		rs.setDateDue(new Date());
+		rs.setDateIn(new Date());
+		rs.setDateOut(new Date());
+		rs.setNumDays(0);
+		rs.setReminderSent(false);
+		rs.setWorkordernum(123);
+		rs.save();
+
+		Rental rs2 = BusinessObjectDAO.getInstance().read("rs111");
+		assertTrue(compareTwoObjects(rs.getClass(), rs, rs2));
+		
+		Cache.getInstance().clear();
+		Rental rs3 = BusinessObjectDAO.getInstance().read("rs111");
+		assertTrue(compareTwoObjects(rs.getClass(), rs, rs3));
+
+		rs.setWorkordernum(432);
+		rs.save();
+		Cache.getInstance().clear();
+		Rental rs4 = BusinessObjectDAO.getInstance().read("rs111");
+		assertTrue(compareTwoObjects(rs.getClass(), rs, rs4));
+
+		//if you really want to break it...
+//		rs.setTransaction_id("blablabla");
+//		assertTrue(compareTwoObjects(rs.getClass(), rs, rs4));		
+	}
+
+//	@Test
 	public void TestStore() throws Exception{
 		Store c = BusinessObjectDAO.getInstance().create("Store", "store111");
 		c.setManagerid("employee1");
@@ -363,7 +430,7 @@ public class Tester1 {
 	
 	}
 
-	 @Test
+//	 @Test
 	public void TestStoreProd() throws Exception{
 		StoreProd sp = BusinessObjectDAO.getInstance().create("StoreProd", "StoreProd111");
 		sp.setStore_id("store1");
@@ -393,8 +460,80 @@ public class Tester1 {
 //		sp.setLocation("blablabla");
 //		assertTrue(compareTwoObjects(sp.getClass(), sp, sp4));
 	}
+	
+//	 @Test
+	public void TestForRent() throws Exception{
+		ForRent pp = BusinessObjectDAO.getInstance().create("ForRent", "ForRent111");
+		pp.setLocation("top");
+		pp.setPrice(2212);
+		pp.setCommission_rate(.078);
+		pp.setStore_id("store1");
+		pp.setType("physical");
+		pp.setCost(99);
+		pp.setPurchase_date(SDF.parse("1985-11-25"));
+		pp.setStatus("good");
+		pp.setTimesRented(2);
+		pp.save();
 
-	@Test
+		//Testing Cache
+		ForRent sp2 = BusinessObjectDAO.getInstance().read("ForRent111");
+		assertTrue("Same", compareTwoObjects(pp.getClass(), pp, sp2));
+
+		//Testing DB read and clearing cache
+		Cache.getInstance().clear();
+		ForRent sp3 = BusinessObjectDAO.getInstance().read("ForRent111");
+		assertTrue("Same", compareTwoObjects(pp.getClass(), sp3, sp2));
+		sp3.save();
+	
+		//testing update of item;
+		sp3.setTimesRented(87878);
+		sp3.save();
+		Cache.getInstance().clear();
+		ForRent sp4 = BusinessObjectDAO.getInstance().read("ForRent111");
+		assertTrue(compareTwoObjects(pp.getClass(), sp3, sp4));
+		
+		//if you really want to break it...
+//		pp.setLocation("blablabla");
+//		assertTrue(compareTwoObjects(pp.getClass(), pp, sp4));
+	}
+	 
+//	 @Test
+		public void TestForSale() throws Exception{
+			ForSale pp = BusinessObjectDAO.getInstance().create("ForSale", "ForSale111");
+			pp.setLocation("top");
+			pp.setPrice(2212);
+			pp.setCommission_rate(.078);
+			pp.setStore_id("store1");
+			pp.setType("physical");
+			pp.setCost(99);
+			pp.setPurchase_date(SDF.parse("1985-11-25"));
+			pp.setStatus("good");
+			pp.setIsnew(true);
+			pp.save();
+
+			//Testing Cache
+			ForSale sp2 = BusinessObjectDAO.getInstance().read("ForSale111");
+			assertTrue("Same", compareTwoObjects(pp.getClass(), pp, sp2));
+
+			//Testing DB read and clearing cache
+			Cache.getInstance().clear();
+			ForSale sp3 = BusinessObjectDAO.getInstance().read("ForSale111");
+			assertTrue("Same", compareTwoObjects(pp.getClass(), sp3, sp2));
+			sp3.save();
+		
+			//testing update of item;
+			sp3.setIsnew(false);
+			sp3.save();
+			Cache.getInstance().clear();
+			ForSale sp4 = BusinessObjectDAO.getInstance().read("ForSale111");
+			assertTrue(compareTwoObjects(pp.getClass(), sp3, sp4));
+			
+			//if you really want to break it...
+//			pp.setLocation("blablabla");
+//			assertTrue(compareTwoObjects(pp.getClass(), pp, sp4));
+		}
+
+//	@Test
 	public void TestTransaction() throws Exception{
 		Transaction t = BusinessObjectDAO.getInstance().create("Transaction", "t111");
 		t.setDate(SDF.parse("1985-01-23"));

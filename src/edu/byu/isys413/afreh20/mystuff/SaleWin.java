@@ -430,29 +430,35 @@ public class SaleWin {
 							PhysicalProd temppprod = BusinessObjectDAO.getInstance().searchForBO("PhysicalProd", new SearchCriteria("pprod_num", p.getProd_num()), new SearchCriteria("status", "available"));
 							
 							if(temppprod.getPhystype().equals("ForRent")){
-								prod = BusinessObjectDAO.getInstance().searchForBO("ForRent", new SearchCriteria("id", temppprod.getId()));
+//								System.out.println("in forrent stuff "+temppprod.getId());
+//								prod = BusinessObjectDAO.getInstance().searchForBO("ForRent", new SearchCriteria("id", temppprod.getId()));
+								ConceptualRental tempcrental = BusinessObjectDAO.getInstance().searchForBO("ConceptualRental", new SearchCriteria("id", temppprod.getCprod_id()));
+								prod = tempcrental;
 								lblQuantity.setText("Number of Days");
 								btnAddProduct.setText("Add Rental");
 								quantity.setMaximum(999);
+								txtPrice.setText(tempcrental.getPriceDay() + "");
 							}else{
 								prod = BusinessObjectDAO.getInstance().searchForBO("ForSale", new SearchCriteria("id", temppprod.getId()));
 								lblQuantity.setText("Quantity");
 								btnAddProduct.setText("Add Product");
 								quantity.setSelection(0);
 								quantity.setMaximum(1);
-								System.out.println("in the for sale stuff");
+//								System.out.println("in the for sale stuff");
+								txtPrice.setText(p.getPrice() + "");
 							}
 						} else {
 							prod = BusinessObjectDAO.getInstance().searchForBO("ConceptualProd", new SearchCriteria("cprod_num", p.getProd_num()));
 							lblQuantity.setText("Quantity");
 							btnAddProduct.setText("Add Product");
 							quantity.setMaximum(999);
+							txtPrice.setText(p.getPrice() + "");
 						}
 						txtProdName.setText(prod.getName());
 						txtPrice.setText(p.getPrice() + "");
 
 					} catch (Exception e1) {
-						// e1.printStackTrace();
+						 e1.printStackTrace();
 						txtProdName.setText("No prod found");
 					}
 
@@ -515,45 +521,7 @@ public class SaleWin {
 						if(prod.getType().equals("PhysicalProd")){
 							PhysicalProd temppprod = BusinessObjectDAO.getInstance().read(prod.getId());
 //							System.out.println("in phys prod");
-							if(temppprod.getPhystype().equals("ForRent")){
-//								System.out.println("in rental");
-								Rental rental = BusinessObjectDAO.getInstance().create("Rental");
-								rental.setChargeamt(Integer.parseInt(quantity.getText())*prod.getPrice());
-								
-								rental.setNumDays(Integer.parseInt(quantity.getText()));
-								//just to get the stupid due date. I hate dates.
-								Date today = new Date();
-								Calendar cal = Calendar.getInstance();
-								cal.setTime(today);
-								cal.add(Calendar.DATE, Integer.parseInt(quantity.getText()));
-								rental.setDateDue(cal.getTime());
-								
-								rental.setDateOut(today);
-								rental.setForrentid(temppprod.getId());
-								rental.setType("Rental");
-								rental.setTransaction_id(trans.getId());
-								
-								rental.save();
-								trans.setCommissionTotal(rental.getChargeamt() * prod.getCommissionRate());
-								
-								trans.addRevSource(rental);
-								refreshProdTable();
-										
-							} else{
-								Sale sale = BusinessObjectDAO.getInstance().create("Sale");
-								sale.setProduct_id(prod.getId());
-								sale.setQuantity(Integer.parseInt(quantity.getText()));
-								sale.setChargeamt(Integer.parseInt(quantity.getText())*prod.getPrice());
-								sale.setTransaction_id(trans.getId());
-								sale.setType("Sale");
-								sale.save();
-								
-								trans.setCommissionTotal(sale.getChargeamt() * prod.getCommissionRate());
-								
-								trans.addRevSource(sale);
-								refreshProdTable();
-							}
-						}else{
+							
 							Sale sale = BusinessObjectDAO.getInstance().create("Sale");
 							sale.setProduct_id(prod.getId());
 							sale.setQuantity(Integer.parseInt(quantity.getText()));
@@ -565,6 +533,52 @@ public class SaleWin {
 							trans.setCommissionTotal(sale.getChargeamt() * prod.getCommissionRate());
 							
 							trans.addRevSource(sale);
+							refreshProdTable();
+							
+						}else{
+							ConceptualProd tempcprod = BusinessObjectDAO.getInstance().read(prod.getId());
+							if(tempcprod.isIsrental()){
+								System.out.println("in rental!!!!");
+								Rental rental = BusinessObjectDAO.getInstance().create("Rental");
+								rental.setChargeamt(Integer.parseInt(quantity.getText())*prod.getPrice());
+								
+								rental.setNumDays(Integer.parseInt(quantity.getText()));
+								
+								//just to get the stupid due date. I hate dates.
+								Date today = new Date();
+								Calendar cal = Calendar.getInstance();
+								cal.setTime(today);
+								cal.add(Calendar.DATE, Integer.parseInt(quantity.getText()));
+								cal.set(Calendar.HOUR_OF_DAY, 0);
+							    cal.set(Calendar.MINUTE, 0);
+							    cal.set(Calendar.SECOND, 0);
+							    cal.set(Calendar.MILLISECOND, 0);
+								java.util.Date d = cal.getTime();
+								rental.setDateDue(d);
+								
+								rental.setDateOut(today);
+								rental.setForrentid(tempcprod.getId());
+								rental.setType("Rental");
+								rental.setTransaction_id(trans.getId());
+								
+								rental.save();
+								trans.setCommissionTotal(rental.getChargeamt() * prod.getCommissionRate());
+								
+								trans.addRevSource(rental);
+								refreshProdTable();
+							}else{
+								Sale sale = BusinessObjectDAO.getInstance().create("Sale");
+								sale.setProduct_id(prod.getId());
+								sale.setQuantity(Integer.parseInt(quantity.getText()));
+								sale.setChargeamt(Integer.parseInt(quantity.getText())*prod.getPrice());
+								sale.setTransaction_id(trans.getId());
+								sale.setType("Sale");
+								sale.save();
+								
+								trans.setCommissionTotal(sale.getChargeamt() * prod.getCommissionRate());
+								trans.addRevSource(sale);
+							}
+							
 							refreshProdTable();
 						}
 					} catch (DataException e1) {
