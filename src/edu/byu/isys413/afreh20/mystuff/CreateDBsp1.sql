@@ -7,22 +7,27 @@
 
 ALTER TABLE employee DROP FOREIGN KEY storeid;
 
-DROP TABLE employee;
-DROP TABLE storeprod;
-DROP TABLE conceptualprod;
-DROP TABLE physicalprod;
-DROP TABLE store;
-DROP TABLE product;
-DROP TABLE customer;
-DROP TABLE transaction;
-DROP TABLE revenuesource;
-DROP TABLE sale;
-DROP TABLE commission;
-DROP TABLE payment;
-DROP TABLE journalentry;
-DROP TABLE debitcredit;
-DROP TABLE genledger;
-DROP TABLE businessobject;
+DROP TABLE IF EXISTS employee;
+DROP TABLE IF EXISTS storeprod;
+DROP TABLE IF EXISTS conceptualrental;
+DROP TABLE IF EXISTS conceptualprod;
+DROP TABLE IF EXISTS forrent;
+DROP TABLE IF EXISTS forsale;
+DROP TABLE IF EXISTS physicalprod;
+DROP TABLE IF EXISTS store;
+DROP TABLE IF EXISTS product;
+DROP TABLE IF EXISTS membership;
+DROP TABLE IF EXISTS customer;
+DROP TABLE IF EXISTS transaction;
+DROP TABLE IF EXISTS sale;
+DROP TABLE IF EXISTS rental;
+DROP TABLE IF EXISTS revenuesource;
+DROP TABLE IF EXISTS commission;
+DROP TABLE IF EXISTS payment;
+DROP TABLE IF EXISTS journalentry;
+DROP TABLE IF EXISTS debitcredit;
+DROP TABLE IF EXISTS genledger;
+DROP TABLE IF EXISTS businessobject;
 
 
 
@@ -98,9 +103,20 @@ CREATE TABLE conceptualprod
   store_id VARCHAR(40) REFERENCES store(id)
 );
 
+CREATE TABLE conceptualrental (
+  id VARCHAR(40) PRIMARY KEY REFERENCES conceptualprod(id),
+  priceday DOUBLE,
+  replaceprice DOUBLE
+);
+
 INSERT INTO businessobject(id, botype) VALUES ('conceptual_product1', 'edu.byu.isys413.afreh20.mystuff.ConceptualProd');
 INSERT INTO product(id, price, type, prod_num, name) VALUES ('conceptual_product1', '22.22', 'ConceptualProd', 1, 'ham');
 INSERT INTO conceptualprod(id, description, commission_rate, store_id, cprod_num) VALUES ('conceptual_product1', 'delicious', .075, 'store1', 1);
+
+INSERT INTO businessobject(id, botype) VALUES ('conceptual_rental1', 'edu.byu.isys413.afreh20.mystuff.ConceptualRental');
+INSERT INTO product(id, price, type, prod_num, name) VALUES ('conceptual_rental1', '11.11', 'ConceptualProd', 2, 'batteries');
+INSERT INTO conceptualprod(id, description, commission_rate, store_id, cprod_num) VALUES ('conceptual_rental1', 'full of juice', .01, 'store1', 2);
+INSERT INTO conceptualrental(id, priceday, replaceprice) VALUES ('conceptual_rental1', 3.33, 45);
 
 CREATE TABLE storeprod
 (
@@ -122,13 +138,31 @@ CREATE TABLE physicalprod (
   status VARCHAR(50),
   commission_rate DOUBLE  DEFAULT 0,
   store_id VARCHAR(40) REFERENCES store(id),
-  pprod_num Integer REFERENCES product(prod_num)
+  pprod_num Integer REFERENCES product(prod_num),
+  type VARCHAR(40)
   -- cprod_id VARCHAR(40) REFERENCES conceptualprod(id)
 );
 
-INSERT INTO businessobject(id, botype) VALUES ('physprod1', 'edu.byu.isys413.afreh20.mystuff.PhysicalProd');
+CREATE TABLE forrent (
+  id VARCHAR(40) PRIMARY KEY REFERENCES physicalprod(id),
+  timesrented Integer
+);
+
+CREATE TABLE forsale (
+  id VARCHAR(40) PRIMARY KEY REFERENCES physicalprod(id),
+  isnew BOOLEAN
+);
+
+INSERT INTO businessobject(id, botype) VALUES ('physprod1', 'edu.byu.isys413.afreh20.mystuff.ForSale');
 INSERT INTO product(id, price, type, prod_num, name) VALUES ('physprod1', 55.55, 'PhysicalProd', 2, 'camera');
-INSERT INTO physicalprod(id, location, commission_rate, store_id, pprod_num) VALUES ('physprod1', 'isle 5', .078, 'store1', 2);
+INSERT INTO physicalprod(id, location, commission_rate, store_id, pprod_num, type) VALUES ('physprod1', 'isle 5', .078, 'store1', 2, "forsale");
+INSERT INTO forsale (id, isnew) VALUES ('physprod1', false);
+
+INSERT INTO businessobject(id, botype) VALUES ('physprod2', 'edu.byu.isys413.afreh20.mystuff.ForRent');
+INSERT INTO product(id, price, type, prod_num, name) VALUES ('physprod2', 66.66, 'PhysicalProd', 3, 'disposable camera');
+INSERT INTO physicalprod(id, location, commission_rate, store_id, pprod_num, type) VALUES ('physprod2', 'isle 7', .023, 'store1', 3, "forrent");
+INSERT INTO forrent (id, timesrented) VALUES ('physprod2', 7);
+
 
 CREATE TABLE customer (
   id VARCHAR(40) PRIMARY KEY REFERENCES businessobject(id),
@@ -146,6 +180,15 @@ INSERT INTO businessobject(id, botype) VALUES ('customer1', 'edu.byu.isys413.afr
 INSERT INTO customer (id, firstname, lastname, phone, email, address) VALUES ('customer1', 'Bobby', 'Tables', '555-554-5555', 'bob@bob.com', '710 Home St.');
 INSERT INTO businessobject(id, botype) VALUES ('anon', 'edu.byu.isys413.afreh20.mystuff.Customer');
 INSERT INTO customer (id, firstname) VALUES ('anon', 'Anon Customer');
+
+CREATE TABLE membership (
+  id VARCHAR(40) PRIMARY KEY REFERENCES businessobject(id),
+  creditcard VARCHAR(40),
+  customerid VARCHAR(40) REFERENCES customer(id)
+);
+
+INSERT INTO businessobject(id, botype) VALUES ('membership1', 'edu.byu.isys413.afreh20.mystuff.Membership');
+INSERT INTO membership(id, creditcard, customerid) VALUES ('membership1', '5555555555', 'customer1');
 
 CREATE TABLE transaction (
   id VARCHAR(40) PRIMARY KEY REFERENCES businessobject(id),
@@ -175,9 +218,22 @@ CREATE TABLE sale (
   product_id VARCHAR(40) REFERENCES product(id)
 );
 
+CREATE TABLE rental(
+  id VARCHAR(40) PRIMARY KEY REFERENCES revenuesource(id),
+  datein DATE,
+  dateout DATE,
+  datedue DATE,
+  remindersent BOOLEAN,
+  workordernum Integer
+);
+
 INSERT INTO businessobject(id, botype) VALUES ('sale1', 'edu.byu.isys413.afreh20.mystuff.Sale');
 INSERT INTO revenuesource(id, chargeamt, type, transaction_id) VALUES ('sale1', 44.44, 'Sale', 'transaction1');
 INSERT INTO sale (id, quantity, product_id) VALUES ('sale1', 2, 'conceptual_product1');
+
+INSERT INTO businessobject(id, botype) VALUES ('rental1', 'edu.byu.isys413.afreh20.mystuff.Rental');
+INSERT INTO revenuesource(id, chargeamt, type, transaction_id) VALUES ('rental1', 12.12, 'Rental', 'transaction1');
+INSERT INTO rental (id, datein, dateout, datedue, remindersent, workordernum) VALUES ('rental1', '2012-12-12', '2012-12-10', '2012-12-15', false, 1);
 
 CREATE TABLE commission (
   id VARCHAR(40) PRIMARY KEY REFERENCES businessobject(id),
@@ -239,3 +295,7 @@ INSERT INTO businessobject(id, botype) VALUES ('genledger4', 'edu.byu.isys413.af
 INSERT INTO genledger (id, name, balance) VALUES ('genledger4', 'Commission Expense', 50);
 INSERT INTO businessobject(id, botype) VALUES ('genledger5', 'edu.byu.isys413.afreh20.mystuff.GenLedger');
 INSERT INTO genledger (id, name, balance) VALUES ('genledger5', 'Commission Payable', 50);
+INSERT INTO businessobject(id, botype) VALUES ('genledger6', 'edu.byu.isys413.afreh20.mystuff.GenLedger');
+INSERT INTO genledger (id, name, balance) VALUES ('genledger6', 'Rental Revenue', 500);
+INSERT INTO businessobject(id, botype) VALUES ('genledger7', 'edu.byu.isys413.afreh20.mystuff.GenLedger');
+INSERT INTO genledger (id, name, balance) VALUES ('genledger7', 'Late Rental Revenue', 500);

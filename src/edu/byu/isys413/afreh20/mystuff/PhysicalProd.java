@@ -17,6 +17,8 @@ public class PhysicalProd extends Product {
 	private int pprod_num;
 	@BusinessObjectField
 	private String store_id;
+	@BusinessObjectField
+	private String type;
 
 	public PhysicalProd(String id) {
 		super(id);
@@ -146,6 +148,21 @@ public class PhysicalProd extends Product {
 	 */
 	public void setPprod_num(int pprod_num) {
 		this.pprod_num = pprod_num;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public String getType() {
+		return type;
+	}
+
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(String type) {
+		this.type = type;
+		setDirty();
 	}
 
 }
