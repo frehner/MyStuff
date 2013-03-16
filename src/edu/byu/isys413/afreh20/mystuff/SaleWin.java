@@ -426,20 +426,27 @@ public class SaleWin {
 					try {
 						Product p = BusinessObjectDAO.getInstance().searchForBO("Product", new SearchCriteria("prod_num", Integer.parseInt(txtProdSearch.getText())));
 						if (p.getType().equals("PhysicalProd")) {
-							PhysicalProd temppprod = BusinessObjectDAO.getInstance().searchForBO("PhysicalProd", new SearchCriteria("pprod_num", p.getProd_num()));
+							
+							PhysicalProd temppprod = BusinessObjectDAO.getInstance().searchForBO("PhysicalProd", new SearchCriteria("pprod_num", p.getProd_num()), new SearchCriteria("status", "available"));
+							
 							if(temppprod.getPhystype().equals("ForRent")){
 								prod = BusinessObjectDAO.getInstance().searchForBO("ForRent", new SearchCriteria("id", temppprod.getId()));
 								lblQuantity.setText("Number of Days");
 								btnAddProduct.setText("Add Rental");
+								quantity.setMaximum(999);
 							}else{
 								prod = BusinessObjectDAO.getInstance().searchForBO("ForSale", new SearchCriteria("id", temppprod.getId()));
 								lblQuantity.setText("Quantity");
 								btnAddProduct.setText("Add Product");
+								quantity.setSelection(0);
+								quantity.setMaximum(1);
+								System.out.println("in the for sale stuff");
 							}
 						} else {
 							prod = BusinessObjectDAO.getInstance().searchForBO("ConceptualProd", new SearchCriteria("cprod_num", p.getProd_num()));
 							lblQuantity.setText("Quantity");
 							btnAddProduct.setText("Add Product");
+							quantity.setMaximum(999);
 						}
 						txtProdName.setText(prod.getName());
 						txtPrice.setText(p.getPrice() + "");
@@ -504,12 +511,16 @@ public class SaleWin {
 			public void widgetSelected(SelectionEvent e) {
 				if(prod != null){
 					try {
-						if(prod.getType().equals("Physical")){
+//						System.out.println("add prod");
+						if(prod.getType().equals("PhysicalProd")){
 							PhysicalProd temppprod = BusinessObjectDAO.getInstance().read(prod.getId());
+//							System.out.println("in phys prod");
 							if(temppprod.getPhystype().equals("ForRent")){
+//								System.out.println("in rental");
 								Rental rental = BusinessObjectDAO.getInstance().create("Rental");
 								rental.setChargeamt(Integer.parseInt(quantity.getText())*prod.getPrice());
 								
+								rental.setNumDays(Integer.parseInt(quantity.getText()));
 								//just to get the stupid due date. I hate dates.
 								Date today = new Date();
 								Calendar cal = Calendar.getInstance();
@@ -519,7 +530,14 @@ public class SaleWin {
 								
 								rental.setDateOut(today);
 								rental.setForrentid(temppprod.getId());
-//								rental.set
+								rental.setType("Rental");
+								rental.setTransaction_id(trans.getId());
+								
+								rental.save();
+								trans.setCommissionTotal(rental.getChargeamt() * prod.getCommissionRate());
+								
+								trans.addRevSource(rental);
+								refreshProdTable();
 										
 							} else{
 								Sale sale = BusinessObjectDAO.getInstance().create("Sale");
@@ -593,13 +611,25 @@ public class SaleWin {
 		
 		tcProduct.setLabelProvider(new ColumnLabelProvider(){
 			public String getText(Object element){
-				Sale sale1 = (Sale) element;
-				Product prod1;
-				try {
-					prod1 = BusinessObjectDAO.getInstance().read(sale1.getProduct_id());
-					return prod1.getName();
-				} catch (DataException e) {
-					e.printStackTrace();
+				RevenueSource rs1 = (RevenueSource) element;
+				if (rs1.getType().equals("Sale")){
+					Sale sale1 = (Sale) element;
+					Product prod1;
+					try {
+						prod1 = BusinessObjectDAO.getInstance().read(sale1.getProduct_id());
+						return prod1.getName();
+					} catch (DataException e) {
+						e.printStackTrace();
+					}
+				}else if(rs1.getType().equals("Rental")){
+					Rental rent1 = (Rental) element;
+					Product prod1;
+					try {
+						prod1 = BusinessObjectDAO.getInstance().read(rent1.getForrentid());
+						return prod1.getName();
+					} catch (DataException e) {
+						e.printStackTrace();
+					}
 				}
 				return null;
 			}	
@@ -607,18 +637,46 @@ public class SaleWin {
 
 		tcQuantity.setLabelProvider(new ColumnLabelProvider(){
 			public String getText(Object element){
-				Sale sale1 = (Sale) element;
-				DecimalFormat df = new DecimalFormat("###");
-				return df.format(sale1.getQuantity())+"";
+				RevenueSource rs1 = (RevenueSource) element;
+				if (rs1.getType().equals("Sale")){
+					Sale sale1 = (Sale) element;
+					DecimalFormat df = new DecimalFormat("###");
+					return df.format(sale1.getQuantity())+"";
+				}else if(rs1.getType().equals("Rental")){
+					Rental rent1 = (Rental) element;
+					DecimalFormat df = new DecimalFormat("###");
+					return df.format(rent1.getNumDays())+"";
+				}
+				return "error";
+//				
+//				Sale sale1 = (Sale) element;
+//				DecimalFormat df = new DecimalFormat("###");
+//				return df.format(sale1.getQuantity())+"";
 			}	
 		});
 		
 		tcPrice.setLabelProvider(new ColumnLabelProvider(){
 			public String getText(Object element){
-				Sale sale1 = (Sale) element;
-				DecimalFormat df = new DecimalFormat("###.##");
-				df.setMinimumFractionDigits(2);
-				return df.format(sale1.getChargeamt())+"";
+				
+				RevenueSource rs1 = (RevenueSource) element;
+				if (rs1.getType().equals("Sale")){
+					Sale sale1 = (Sale) element;
+					DecimalFormat df = new DecimalFormat("###.##");
+					df.setMinimumFractionDigits(2);
+					return df.format(sale1.getChargeamt())+"";
+				}else if(rs1.getType().equals("Rental")){
+					Rental rent1 = (Rental) element;
+					DecimalFormat df = new DecimalFormat("###.##");
+					df.setMinimumFractionDigits(2);
+					return df.format(rent1.getChargeamt())+"";
+				}
+				return "error";
+				
+				
+//				Sale sale1 = (Sale) element;
+//				DecimalFormat df = new DecimalFormat("###.##");
+//				df.setMinimumFractionDigits(2);
+//				return df.format(sale1.getChargeamt())+"";
 			}
 		});
 		
@@ -779,6 +837,7 @@ public class SaleWin {
 			txtSubtotal.setText("$"+df.format(trans.getSubtotal())+"");
 			txtTax.setText("$"+df.format(trans.getTax())+"");
 			txtTotal.setText("$"+df.format(trans.getTotal())+"");
+			quantity.setSelection(0);
 		}catch (Exception e){
 			e.printStackTrace();
 			txtSubtotal.setText("Fail on table");

@@ -154,7 +154,7 @@ CREATE TABLE forsale (
 );
 
 INSERT INTO businessobject(id, botype) VALUES ('physprod1', 'edu.byu.isys413.afreh20.mystuff.ForSale');
-INSERT INTO product(id, price, type, prod_num, name) VALUES ('physprod1', 55.55, 'PhysicalProd', 2, 'camera');
+INSERT INTO product(id, price, type, prod_num, name) VALUES ('physprod1', 55.55, 'PhysicalProd', 4, 'camera');
 INSERT INTO physicalprod(id, location, commission_rate, store_id, pprod_num, phystype, status) VALUES ('physprod1', 'isle 5', .078, 'store1', 2, "ForSale", "available");
 INSERT INTO forsale (id, isnew) VALUES ('physprod1', false);
 
@@ -225,7 +225,8 @@ CREATE TABLE rental(
   datedue DATE,
   remindersent BOOLEAN,
   workordernum Integer,
-  forrentid VARCHAR(40) REFERENCES forrent(id)
+  forrentid VARCHAR(40) REFERENCES forrent(id),
+  numdays Integer
 );
 
 INSERT INTO businessobject(id, botype) VALUES ('sale1', 'edu.byu.isys413.afreh20.mystuff.Sale');
@@ -234,7 +235,7 @@ INSERT INTO sale (id, quantity, product_id) VALUES ('sale1', 2, 'conceptual_prod
 
 INSERT INTO businessobject(id, botype) VALUES ('rental1', 'edu.byu.isys413.afreh20.mystuff.Rental');
 INSERT INTO revenuesource(id, chargeamt, type, transaction_id) VALUES ('rental1', 12.12, 'Rental', 'transaction1');
-INSERT INTO rental (id, datein, dateout, datedue, remindersent, workordernum) VALUES ('rental1', '2012-12-12', '2012-12-10', '2012-12-15', false, 1);
+INSERT INTO rental (id, datein, dateout, datedue, remindersent, workordernum, forrentid, numdays) VALUES ('rental1', '2012-12-12', '2012-12-10', '2012-12-15', false, 1, 'physprod2', 2);
 
 CREATE TABLE commission (
   id VARCHAR(40) PRIMARY KEY REFERENCES businessobject(id),

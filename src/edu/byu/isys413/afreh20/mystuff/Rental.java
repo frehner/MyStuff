@@ -17,6 +17,8 @@ public class Rental extends RevenueSource{
 	private int workordernum;
 	@BusinessObjectField
 	private String forrentid;
+	@BusinessObjectField
+	private int numDays;
 	
 	public Rental(String id) {
 		super(id);
@@ -109,6 +111,21 @@ public class Rental extends RevenueSource{
 	 */
 	public void setForrentid(String forrentid) {
 		this.forrentid = forrentid;
+		setDirty();
+	}
+
+	/**
+	 * @return the numDays
+	 */
+	public int getNumDays() {
+		return numDays;
+	}
+
+	/**
+	 * @param numDays the numDays to set
+	 */
+	public void setNumDays(int numDays) {
+		this.numDays = numDays;
 		setDirty();
 	}
 }
