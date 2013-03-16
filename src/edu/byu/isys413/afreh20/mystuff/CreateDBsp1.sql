@@ -78,7 +78,7 @@ CREATE TABLE store (
 ALTER TABLE employee ADD CONSTRAINT storeid FOREIGN KEY (storeid) REFERENCES store(id);
 
 INSERT INTO businessobject(id, botype) VALUES ('store1', 'edu.byu.isys413.afreh20.mystuff.Store');
-INSERT INTO store(id, address, phone, salestaxrate, managerid) VALUES ('store1', 'Bulldog Dr.', '801-422-4000', 0.0675, 'employee1');
+INSERT INTO store(id, address, phone, salestaxrate, managerid, location) VALUES ('store1', 'Bulldog Dr.', '801-422-4000', 0.0675, 'employee1', 'Bulldog Dr.');
 
 UPDATE employee SET storeid='store1' WHERE id='employee1';
 UPDATE employee SET storeid='store1' WHERE id='employee3';
