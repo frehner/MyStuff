@@ -229,6 +229,13 @@ public class SaleWin {
 		mntmEmailReminderRentals.setText("Email Reminder Rentals");
 		
 		MenuItem mntmSellOverdueRental = new MenuItem(menu_4, SWT.NONE);
+		mntmSellOverdueRental.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				RentalSold rsold = new RentalSold(shlSaleWindow, 0);
+				rsold.open();
+			}
+		});
 		mntmSellOverdueRental.setText("Sell Overdue Rental");
 
 		MenuItem mntmMaintenance = new MenuItem(menu, SWT.CASCADE);

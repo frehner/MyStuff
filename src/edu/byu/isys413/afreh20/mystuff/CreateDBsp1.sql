@@ -241,7 +241,9 @@ INSERT INTO sale (id, quantity, product_id) VALUES ('sale1', 2, 'conceptual_prod
 
 INSERT INTO businessobject(id, botype) VALUES ('rental1', 'edu.byu.isys413.afreh20.mystuff.Rental');
 INSERT INTO revenuesource(id, chargeamt, type, transaction_id) VALUES ('rental1', 12.12, 'Rental', 'transaction1');
-INSERT INTO rental (id, datein, dateout, datedue, remindersent, workordernum, forrentid, numdays) VALUES ('rental1', '2012-12-12', '2012-12-10', '2012-12-15', false, 1, 'physprod2', 2);
+INSERT INTO rental (id, dateout, datedue, remindersent, workordernum, forrentid, numdays) VALUES ('rental1', '2012-12-10', '2012-12-15', false, 1, 'physprod2', 2);
+-- INSERT INTO rental (id, datein, dateout, datedue, remindersent, workordernum, forrentid, numdays) VALUES ('rental1', '2012-12-12', '2012-12-10', '2012-12-15', false, 1, 'physprod2', 2);
+
 
 CREATE TABLE commission (
   id VARCHAR(40) PRIMARY KEY REFERENCES businessobject(id),

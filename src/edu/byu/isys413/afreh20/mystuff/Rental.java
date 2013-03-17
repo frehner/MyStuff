@@ -72,7 +72,7 @@ public class Rental extends RevenueSource{
 
 	    java.util.Date realDate = calendar.getTime();
 		
-		this.dateOut = realDate;
+		this.dateIn = realDate;
 		setDirty();
 	}
 

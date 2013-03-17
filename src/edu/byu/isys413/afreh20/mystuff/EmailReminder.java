@@ -79,7 +79,7 @@ public class EmailReminder extends Dialog {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try{
-					LinkedList<Rental> overDue = new LinkedList<Rental>();
+					
 					List<BusinessObject> allRentals = BusinessObjectDAO.getInstance().searchForAll("Rental");
 					for(BusinessObject bo : allRentals){
 						Rental tempr = (Rental) bo;
