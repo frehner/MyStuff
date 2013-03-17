@@ -183,7 +183,7 @@ CREATE TABLE customer (
 );
 
 INSERT INTO businessobject(id, botype) VALUES ('customer1', 'edu.byu.isys413.afreh20.mystuff.Customer');
-INSERT INTO customer (id, firstname, lastname, phone, email, address) VALUES ('customer1', 'Bobby', 'Tables', '555-554-5555', 'bob@bob.com', '710 Home St.');
+INSERT INTO customer (id, firstname, lastname, phone, email, address) VALUES ('customer1', 'Bobby', 'Tables', '555-554-5555', 'frehnar@hotmail.com', '710 Home St.');
 INSERT INTO businessobject(id, botype) VALUES ('anon', 'edu.byu.isys413.afreh20.mystuff.Customer');
 INSERT INTO customer (id, firstname) VALUES ('anon', 'Anon Customer');
 

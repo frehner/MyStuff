@@ -222,7 +222,8 @@ public class SaleWin {
 		mntmEmailReminderRentals.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				
+				EmailReminder eremind = new EmailReminder(shlSaleWindow, 0);
+				eremind.open();
 			}
 		});
 		mntmEmailReminderRentals.setText("Email Reminder Rentals");
