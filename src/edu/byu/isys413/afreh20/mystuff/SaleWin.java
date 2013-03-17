@@ -2,6 +2,7 @@ package edu.byu.isys413.afreh20.mystuff;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -79,6 +80,7 @@ public class SaleWin {
 	@SuppressWarnings("unused")
 	private SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
 	private Label lblQuantity;
+	private ArrayList<Product> allProds = new ArrayList<Product>();
 //	private RevenueSource revSource;
 
 	/**
@@ -188,6 +190,17 @@ public class SaleWin {
 
 		Menu menu_3 = new Menu(mntmView);
 		mntmView.setMenu(menu_3);
+		
+		MenuItem mntmReturnRentals = new MenuItem(menu_3, SWT.NONE);
+		mntmReturnRentals.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				//TODO 
+				ReturnRental return1 = new ReturnRental(shlSaleWindow, 0);
+				return1.open();
+			}
+		});
+		mntmReturnRentals.setText("Return Rentals");
 
 		MenuItem mntmBatch = new MenuItem(menu, SWT.CASCADE);
 		mntmBatch.setText("Batch");
@@ -204,6 +217,18 @@ public class SaleWin {
 			}
 		});
 		mntmDailyBatchWindow.setText("Daily Batch Window");
+		
+		MenuItem mntmEmailReminderRentals = new MenuItem(menu_4, SWT.NONE);
+		mntmEmailReminderRentals.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				
+			}
+		});
+		mntmEmailReminderRentals.setText("Email Reminder Rentals");
+		
+		MenuItem mntmSellOverdueRental = new MenuItem(menu_4, SWT.NONE);
+		mntmSellOverdueRental.setText("Sell Overdue Rental");
 
 		MenuItem mntmMaintenance = new MenuItem(menu, SWT.CASCADE);
 		mntmMaintenance.setText("Maintenance");
@@ -433,7 +458,7 @@ public class SaleWin {
 //								System.out.println("in forrent stuff "+temppprod.getId());
 //								prod = BusinessObjectDAO.getInstance().searchForBO("ForRent", new SearchCriteria("id", temppprod.getId()));
 								ConceptualRental tempcrental = BusinessObjectDAO.getInstance().searchForBO("ConceptualRental", new SearchCriteria("id", temppprod.getCprod_id()));
-								prod = tempcrental;
+								prod = temppprod;
 								lblQuantity.setText("Number of Days");
 								btnAddProduct.setText("Add Rental");
 								quantity.setMaximum(999);
@@ -517,28 +542,28 @@ public class SaleWin {
 			public void widgetSelected(SelectionEvent e) {
 				if(prod != null){
 					try {
+						//TODO
 //						System.out.println("add prod");
-						if(prod.getType().equals("PhysicalProd")){
+						if(prod.getType().equals("PhysicalProd")){		
 							PhysicalProd temppprod = BusinessObjectDAO.getInstance().read(prod.getId());
-//							System.out.println("in phys prod");
-							
-							Sale sale = BusinessObjectDAO.getInstance().create("Sale");
-							sale.setProduct_id(prod.getId());
-							sale.setQuantity(Integer.parseInt(quantity.getText()));
-							sale.setChargeamt(Integer.parseInt(quantity.getText())*prod.getPrice());
-							sale.setTransaction_id(trans.getId());
-							sale.setType("Sale");
-							sale.save();
-							
-							trans.setCommissionTotal(sale.getChargeamt() * prod.getCommissionRate());
-							
-							trans.addRevSource(sale);
-							refreshProdTable();
-							
-						}else{
-							ConceptualProd tempcprod = BusinessObjectDAO.getInstance().read(prod.getId());
-							if(tempcprod.isIsrental()){
-								System.out.println("in rental!!!!");
+							if(temppprod.getPhystype().equals("ForSale")){
+//								System.out.println("in phys prod");
+								allProds.add(temppprod);
+								Sale sale = BusinessObjectDAO.getInstance().create("Sale");
+								sale.setProduct_id(prod.getId());
+								sale.setQuantity(Integer.parseInt(quantity.getText()));
+								sale.setChargeamt(Integer.parseInt(quantity.getText())*prod.getPrice());
+								sale.setTransaction_id(trans.getId());
+								sale.setType("Sale");
+								sale.save();
+								
+								trans.setCommissionTotal(sale.getChargeamt() * prod.getCommissionRate());
+								
+								trans.addRevSource(sale);
+								refreshProdTable();
+							}else{
+//								System.out.println("in rental!!!!");
+								allProds.add(temppprod);
 								Rental rental = BusinessObjectDAO.getInstance().create("Rental");
 								rental.setChargeamt(Integer.parseInt(quantity.getText())*prod.getPrice());
 								
@@ -557,7 +582,7 @@ public class SaleWin {
 								rental.setDateDue(d);
 								
 								rental.setDateOut(today);
-								rental.setForrentid(tempcprod.getId());
+								rental.setForrentid(temppprod.getId());
 								rental.setType("Rental");
 								rental.setTransaction_id(trans.getId());
 								
@@ -566,21 +591,25 @@ public class SaleWin {
 								
 								trans.addRevSource(rental);
 								refreshProdTable();
-							}else{
-								Sale sale = BusinessObjectDAO.getInstance().create("Sale");
-								sale.setProduct_id(prod.getId());
-								sale.setQuantity(Integer.parseInt(quantity.getText()));
-								sale.setChargeamt(Integer.parseInt(quantity.getText())*prod.getPrice());
-								sale.setTransaction_id(trans.getId());
-								sale.setType("Sale");
-								sale.save();
-								
-								trans.setCommissionTotal(sale.getChargeamt() * prod.getCommissionRate());
-								trans.addRevSource(sale);
 							}
-							
-							refreshProdTable();
+//								
+						}else{
+							ConceptualProd tempcprod = BusinessObjectDAO.getInstance().read(prod.getId());
+							allProds.add(tempcprod);
+							Sale sale = BusinessObjectDAO.getInstance().create("Sale");
+							sale.setProduct_id(prod.getId());
+							sale.setQuantity(Integer.parseInt(quantity.getText()));
+							sale.setChargeamt(Integer.parseInt(quantity.getText())*prod.getPrice());
+							sale.setTransaction_id(trans.getId());
+							sale.setType("Sale");
+							sale.save();
+								
+							trans.setCommissionTotal(sale.getChargeamt() * prod.getCommissionRate());
+							trans.addRevSource(sale);
 						}
+							
+						refreshProdTable();
+						
 					} catch (DataException e1) {
 //						e1.printStackTrace();
 						txtProdName.setText("Failed to add");
@@ -741,14 +770,36 @@ public class SaleWin {
 						trans.setDate(new Date());
 						trans.save();
 						
-						//TODO for changing the status of the products
-						
-						
-						
 						PaymentWin paywin = new PaymentWin(shlSaleWindow, 0, trans);
 						paywin.open();
+						//TODO 
 						
 						if(paywin.getWasPaid()){
+							
+							for(Product p1 : allProds){
+								if(p1.getType().equals("PhysicalProd")){
+									PhysicalProd pptemp = BusinessObjectDAO.getInstance().read(p1.getId());
+									if(pptemp.getPhystype().equals("ForSale")){
+										pptemp.setStatus("Sold");
+										pptemp.save();
+									}else{
+										pptemp.setStatus("rented out");
+										pptemp.save();
+									}
+									
+								}else{
+									ConceptualProd cptemp = BusinessObjectDAO.getInstance().read(p1.getId());
+//									StoreProd sp1 = BusinessObjectDAO.getInstance().searchForBO("StoreProd", new SearchCriteria("store_id", store.getId()), new SearchCriteria("cprod_id", cptemp.getId()));
+//									
+//									for(RevenueSource rs2:trans.getRevSource()){
+//										if(rs2.getType().equals("Sale")){
+//											Sale tempSale = BusinessObjectDAO.getInstance().read(rs2.getId());
+//											sp1.setQuantity(sp1.getQuantity() - tempSale.getQuantity());
+//											sp1.save();
+//										}
+//									}
+								}
+							}
 	
 							textCustSearch.setText("");
 							txtCustName.setText("");
@@ -766,7 +817,7 @@ public class SaleWin {
 							je.setDate(new Date());
 							je.save();
 							
-							for(int i=0;i<5;i++){
+							for(int i=0;i<6;i++){
 								DebitCredit dc = BusinessObjectDAO.getInstance().create("DebitCredit");
 								if(i==0){
 									dc.setAmount(trans.getTotal());
@@ -776,11 +827,32 @@ public class SaleWin {
 									dc.save();
 								}
 								else if(i==1){
-									dc.setAmount(trans.getSubtotal());
-									dc.setGenledger_name("Sales Revenue");
-									dc.setIsdebit(false);
-									dc.setJournalentry_id(je.getId());
-									dc.save();
+									double salestotal = 0;
+									double renttotal = 0;
+									
+									for(RevenueSource rs3:trans.getRevSource()){
+										if(rs3.getType().equals("Sale")){
+											salestotal += rs3.getChargeamt();
+										}else{
+											renttotal += rs3.getChargeamt();
+										}
+									}
+									if(salestotal > 0){
+										dc.setAmount(salestotal);
+										dc.setGenledger_name("Sales Revenue");
+										dc.setIsdebit(false);
+										dc.setJournalentry_id(je.getId());
+										dc.save();
+									}
+									if(renttotal > 0){
+										DebitCredit dc1 = BusinessObjectDAO.getInstance().create("DebitCredit");
+										dc1.setAmount(salestotal);
+										dc1.setGenledger_name("Rental Revenue");
+										dc1.setIsdebit(false);
+										dc1.setJournalentry_id(je.getId());
+										dc1.save();
+									}
+									
 								}
 								else if(i==2){
 									dc.setAmount(trans.getTax());
@@ -799,6 +871,13 @@ public class SaleWin {
 								else if(i==4){
 									dc.setAmount(trans.getCommissionTotal());
 									dc.setGenledger_name("Commission Payable");
+									dc.setIsdebit(false);
+									dc.setJournalentry_id(je.getId());
+									dc.save();
+								}
+								else if (i == 5) {
+									dc.setAmount(trans.getSubtotal());
+									dc.setGenledger_name("Inventory");
 									dc.setIsdebit(false);
 									dc.setJournalentry_id(je.getId());
 									dc.save();

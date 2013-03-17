@@ -307,3 +307,5 @@ INSERT INTO businessobject(id, botype) VALUES ('genledger6', 'edu.byu.isys413.af
 INSERT INTO genledger (id, name, balance) VALUES ('genledger6', 'Rental Revenue', 500);
 INSERT INTO businessobject(id, botype) VALUES ('genledger7', 'edu.byu.isys413.afreh20.mystuff.GenLedger');
 INSERT INTO genledger (id, name, balance) VALUES ('genledger7', 'Late Rental Revenue', 500);
+INSERT INTO businessobject(id, botype) VALUES ('genledger8', 'edu.byu.isys413.afreh20.mystuff.GenLedger');
+INSERT INTO genledger (id, name, balance) VALUES ('genledger8', 'Inventory', 500);
